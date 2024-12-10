@@ -1,7 +1,10 @@
 defmodule PentoWeb.WrongLive do
   use PentoWeb, :live_view
+  alias Pento.Accounts
 
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
+    user = Accounts.get_user_by_session_token(session["user_token"])
+
     {
       :ok,
       assign(
@@ -10,7 +13,8 @@ defmodule PentoWeb.WrongLive do
         message: "Make a guess:",
         current_time: time(),
         range: range(),
-        answer: get_answer()
+        answer: get_answer(),
+        page_title: "Pick a Number"
       )
     }
   end
@@ -43,6 +47,10 @@ defmodule PentoWeb.WrongLive do
         </.link>
       <% end %>
     </h2>
+    <br />
+    <pre>
+      <%= @current_user.email %>
+    </pre>
     """
   end
 
@@ -62,15 +70,15 @@ defmodule PentoWeb.WrongLive do
     }
   end
 
-  def time() do
+  def time do
     DateTime.utc_now() |> to_string
   end
 
-  def range() do
+  def range do
     1..11
   end
 
-  def get_answer() do
+  def get_answer do
     range()
     |> Enum.random()
     |> to_string
